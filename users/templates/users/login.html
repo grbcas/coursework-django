@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row-6">
+    <div class="col-6">
+        <div class="card">
+            <div class="title">Users</div>
+            <div class="card-body">
+                <form method="post" action="" class="form-floating" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <p></p>
+                    <button type="submit" class="btn btn-warning">
+                        Login
+                    </button>
+                    <button type="submit" class="btn btn-success">Отмена</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    <body>
+      {{user}} authentication:
+      {{user.is_authenticated}}
+
+    </body>
+{% endblock %}
