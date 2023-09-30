@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'mailing',
     'blog',
     'users',
-
     # 'debug_toolbar',
 ]
 
@@ -123,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -154,6 +153,8 @@ AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+LOGIN_URL = '/users'
+
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
@@ -172,7 +173,6 @@ CACHES = {
     }
 }
 
-LOGIN_URL = '/users'
 
 INTERNAL_IPS = [
     # ...
