@@ -1,29 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
 <div>
-
-    <br><br><br><br><br>
-    Список рассылок
-    <a class="button"  href="{% url 'mailing:create' %}" >Создать рассылку</a>
-
+    <header>Список рассылок
+        <a class="button" href="{% url 'mailing:create' %}">Создать рассылку</a>
+    </header>
 </div>
-{% for object in object_list %}
-            <div class="card-body">
-                <p class="card-text">{{ object }}</p>
-                <p class="card-text">{{ object.owner }}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group ">
 
-                        <a href="{% url 'mailing:edit' object.pk %}" type="button"
-                           class="btn btn-sm btn-outline-secondary">Edit</a>
-                        <a href="{% url 'mailing:delete' object.pk %}" type="button"
-                           class="btn btn-danger btn-outline-secondary">Delete</a>
-                        <button >Send
-                        </button>
-                    </div>
-                    <small class="text-muted">{{ object.modify_date }}</small>
-{{ object }}
+<div class="container mt-5">
+    {% for object in object_list %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <p class="card-text">{{ object }}</p>
+            <p class="card-text">{{ object.owner }}</p>
+            <p class="card-text">{{ object.recipients }}</p>
+            <div class="d-flex justify-content-between align-items-center">
 
 
-{% endfor %}
+                    <a href="{% url 'mailing:edit' object.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a href="{% url 'mailing:delete' object.pk %}" type="button"
+                       class="btn btn-danger btn-outline-secondary">Delete</a>
+
+                    <form action="{% url 'mailing:toggle_status_mailing' object.pk %}" method="post">
+                    {%csrf_token%}
+                        <button class="btn btn-success" type="submit">status</button>
+                    </form>
+
+                    <form action="{% url 'mailing:send_mailing_btn' object.pk %}" method="post">
+                    {%csrf_token%}
+                        <button class="btn btn-warring" type="submit">send</button>
+                    </form>
+
+                {{ object.creation_date }}<br>
+                {{ object.status_run }}
+            </div>
+    {% endfor %}
+
 {% endblock %}

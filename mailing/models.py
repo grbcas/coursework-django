@@ -30,9 +30,9 @@ class Mailing(models.Model):
     status_set = models.BooleanField(default=True, verbose_name='status_set')
     start_time = models.DateTimeField(default=timezone.now, verbose_name='start_time')
     end_time = models.DateTimeField(verbose_name='end_time', **NULLABLE)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Пользователь', **NULLABLE)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Owner', **NULLABLE)
     creation_date = models.DateTimeField(default=timezone.now, verbose_name='creation_date')
-    recipients = models.ManyToManyField(Client)
+    recipients = models.ManyToManyField(Client, verbose_name='Clients', **NULLABLE)
     message = models.TextField(max_length=1000, verbose_name='message', **NULLABLE)
 
     def __str__(self):
