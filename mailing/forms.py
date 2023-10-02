@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import DateTimeInput
+from django.forms import DateTimeInput, CheckboxSelectMultiple
 
 from mailing.models import Mailing, Client
 
@@ -21,7 +21,7 @@ class FormStyleMixin:
         self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if isinstance(field.widget, CheckboxInput):
+            if isinstance(field.widget, CheckboxInput | CheckboxSelectMultiple):
                 field.widget.attrs['class'] = 'form-check-input'
             elif isinstance(field.widget, Select):
                 field.widget.attrs['class'] = 'form-control'
@@ -47,12 +47,12 @@ class MailingForm(FormStyleMixin, forms.ModelForm):
         widget=DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}, format='%Y-%m-%dT%H:%M')
     )
 
-    recipients = forms.ModelMultipleChoiceField(
-        label='Получатели',
-        required=False,
-        queryset=Client.objects.all(),
-        widget=forms.CheckboxSelectMultiple()
-    )
+    # recipients = forms.ModelMultipleChoiceField(
+    #     label='Получатели',
+    #     required=False,
+    #     queryset=Client.objects.all(),
+    #     widget=forms.CheckboxSelectMultiple()
+    # )
 
     class Meta:
         model = Mailing

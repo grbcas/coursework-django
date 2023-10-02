@@ -14,6 +14,7 @@ urlpatterns = [
     path('create/', MailingCreateView.as_view(), name='create'),
     path('edit/<int:pk>/', never_cache(MailingUpdateView.as_view()), name='edit'),
     path('delete/<int:pk>/', never_cache(MailingDeleteView.as_view()), name='delete'),
-    path('<int:pk>', toggle_status_mailing, name='toggle_status_mailing'),
-    path('<int:pk>', send_mailing_btn, name='send_mailing_btn'),
+    path('<int:pk>', toggle_status_mailing, name='toggle_status_mailing'), # работает через форму
+    path('<int:pk>/', send_mailing_btn, name='send_mailing_btn'), # work via href
+    path('message/', send_mailing_btn, name='send_mailing_btn'),
 ]

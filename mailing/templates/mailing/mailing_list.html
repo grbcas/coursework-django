@@ -12,7 +12,7 @@
         <div class="card-body">
             <p class="card-text">{{ object }}</p>
             <p class="card-text">{{ object.owner }}</p>
-            <p class="card-text">{{ object.recipients }}</p>
+            <p class="card-text">{{ object.recipients.values }}</p>
             <div class="d-flex justify-content-between align-items-center">
 
 
@@ -21,15 +21,15 @@
                     <a href="{% url 'mailing:delete' object.pk %}" type="button"
                        class="btn btn-danger btn-outline-secondary">Delete</a>
 
-                    <form action="{% url 'mailing:toggle_status_mailing' object.pk %}" method="post">
-                    {%csrf_token%}
-                        <button class="btn btn-success" type="submit">status</button>
-                    </form>
-
                     <form action="{% url 'mailing:send_mailing_btn' object.pk %}" method="post">
                     {%csrf_token%}
                         <button class="btn btn-warring" type="submit">send</button>
                     </form>
+
+                    <a href="{% url 'mailing:toggle_status_mailing' object.pk %}" >
+                        <button class="btn btn-success" type="button">status</button>
+                    </a>
+
 
                 {{ object.creation_date }}<br>
                 {{ object.status_run }}
