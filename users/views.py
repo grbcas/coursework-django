@@ -69,7 +69,7 @@ def verification(request):
             user.is_verified = True
             user.is_active = True
             user.save()
-            return redirect(reverse('catalog:index'))
+            return redirect(reverse('mailing:home'))
     form = VerificationForm(request.POST or None)
     context = {'form': form, 'user_email': user.email}
     return render(request, template, context)

@@ -11,6 +11,8 @@ class Client(models.Model):
 
     email = models.EmailField(unique=True, verbose_name='email address')
     comment = models.TextField(max_length=100, **NULLABLE)
+    name = models.CharField(max_length=150, verbose_name='ФИО',**NULLABLE)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Пользователь', **NULLABLE)
 
     def __str__(self):
         return f"{self.email}"
@@ -25,6 +27,7 @@ class Message(models.Model):
 
     subject = models.CharField(default='No subject', max_length=100, verbose_name='Тема')
     body = models.TextField(verbose_name='Тело письма', **NULLABLE)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Owner', **NULLABLE)
 
     def __str__(self):
         return self.subject
@@ -45,7 +48,7 @@ class Mailing(models.Model):
     )
 
     name = models.CharField(max_length=50, verbose_name='name')
-    mailing_frequency = models.PositiveSmallIntegerField(default=1, verbose_name='mailing_frequency')
+    frequency = models.PositiveSmallIntegerField(default=1, verbose_name='mailing_frequency')
     mailing_time = models.TimeField(default=datetime.time(16, 00), verbose_name='mailing_time')
     status_stop = models.BooleanField(default=False, verbose_name='status_stop')
     status_run = models.BooleanField(default=False, verbose_name='status_run')
@@ -59,12 +62,12 @@ class Mailing(models.Model):
     message = models.ForeignKey(Message, on_delete=models.SET_NULL, verbose_name='Сообщение',  **NULLABLE)
 
     def __str__(self):
-        return f"{self.name} {self.mailing_frequency}"
+        return f"{self.name} {self.frequency} {self.recipients}"
 
     class Meta:
         verbose_name = 'Mailing'
         verbose_name_plural = 'Mailings'
-        ordering = ['name']
+        ordering = ['pk']
 
 
 class Log(models.Model):

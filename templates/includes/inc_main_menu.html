@@ -11,6 +11,8 @@
             </div>
             {% if user.is_authenticated %}
             <a href="{% url 'mailing:list' %}" class="btn btn-outline-secondary mr-2" type="button">Рассылки</a>
+            <a href="{% url 'mailing:list_message' %}" class="btn btn-outline-secondary mr-2" type="button">Сообщения</a>
+            <a href="{% url 'mailing:recipients_list' %}" class="btn btn-outline-secondary mr-2" type="button">Клиенты</a>
             {% endif %}
 
             <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -32,9 +34,6 @@
                         <a class="nav-link" href="{% url 'users:register' %}">Register</a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="{% url 'users:password_reset' %}">ResetPSWD</a>
-                    </li>
-                                        <li class="nav-item active">
                         <a class="nav-link" href="{% url 'users:password_reset' %}">ResetPSWD</a>
                     </li>
                     {%endif%}

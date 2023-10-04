@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'mailing',
     'blog',
     'users',
+    "django_apscheduler",
     # 'debug_toolbar',
 ]
 

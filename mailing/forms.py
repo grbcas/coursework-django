@@ -57,3 +57,21 @@ class MailingForm(FormStyleMixin, forms.ModelForm):
     class Meta:
         model = Mailing
         fields = '__all__'
+
+
+class ClientForm(FormStyleMixin, forms.ModelForm):
+    """
+    Форма для модели Клиента (Client).
+
+    Устанавливает поле comment как необязательное с соответствующей пометкой
+    """
+
+    comment = forms.CharField(
+        required=False,
+        label='* Комментарий',
+        widget=forms.Textarea()
+    )
+
+    class Meta:
+        model = Client
+        fields = ('email', 'comment')
