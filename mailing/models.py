@@ -62,7 +62,7 @@ class Mailing(models.Model):
     message = models.ForeignKey(Message, on_delete=models.SET_NULL, verbose_name='Сообщение',  **NULLABLE)
 
     def __str__(self):
-        return f"{self.name} {self.frequency} {self.recipients}"
+        return f"name:{self.name}, frequency: {self.frequency}, start_time:{self.start_time}"
 
     class Meta:
         verbose_name = 'Mailing'

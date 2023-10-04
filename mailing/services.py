@@ -38,16 +38,24 @@ def manual_send_mailing(pk):
     )
 
 
-def toggle_state() -> None:
+def toggle_state(frequency) -> None:
     """
     Функция проверки время старта/конца рассылки относительно текущего времени - меняет статус рассылки
     ---можно заменить встроенным функционалом apscheduler---
     """
     datetime_now = timezone.now()
-    mailing_list = Mailing.objects.filter(frequency=frequency)
+    # mailing_list = Mailing.objects.filter(frequency=frequency) # Ошибки
+    mailing_list = list(Mailing.objects.filter(frequency=frequency))
+
     for mailing in mailing_list:
-        start_time = mailing.values_list('start_time', flat=True)[0] # datetime.datetime(2023, 10, 3, 15, 19, tzinfo=datetime.timezone.utc)
-        stop_time = mailing.values_list('stop_time', flat=True)[0]
+        # print(mailing)
+        mailing_dict = mailing.__dict__
+        start_time = mailing_dict.get('start_time')
+        stop_time = mailing_dict.get('stop_time')
+
+        # start_time = mailing.values_list('start_time', flat=True)[0] # TypeError: 'Mailing' object is not iterable
+        # stop_time = mailing.values_list('stop_time', flat=True)[0]
+
         if not stop_time:
             if datetime_now > start_time:
                 mailing.status_run = 1
@@ -61,18 +69,33 @@ def toggle_state() -> None:
 
 
 def frequently_send_mailings(frequency):
-    toggle_state()
-    mailing_list = Mailing.objects.filter(frequency=frequency).filter(status_run=1)
+    """
+    Функция отправки сообщения клиентам с частой frequency
+    """
+    toggle_state(frequency)
 
-    for mailing in mailing_list:
-        emails = list(mailing.values_list('recipients__email', flat=True))
-        subject = mailing.values_list('message__subject', flat=True)[0]
-        message = mailing.values_list('message__body', flat=True)[0]
+    # mailing_list = Mailing.objects.filter(frequency=frequency).filter(status_run=1) # не итерируется, нет данных из связанных таблиц
+
+    mailing_list_id = Mailing.objects.values_list('id', flat=True).filter(frequency=frequency).filter(status_run=1)
+    print(mailing_list_id)
+
+    for pk in mailing_list_id:
+        # mailing_dict = mailing.__dict__
+        # print(mailing_dict)
+
+        # emails = list(mailing.values_list('recipients__email', flat=True)) # AttributeError: 'Mailing' object has no attribute 'values_list'
+        # subject = mailing.values_list('message__subject', flat=True)[0]
+        # message = mailing.values_list('message__body', flat=True)[0]
+
+        emails = list(Mailing.objects.values_list('recipients__email', flat=True).filter(pk=pk))
+        subject = Mailing.objects.values_list('message__subject', flat=True).filter(pk=pk)[0]
+        message = Mailing.objects.values_list('message__body', flat=True).filter(pk=pk)[0]
+
         print(emails, '/n', subject, '/n', message)
 
         send_mail(
             subject=f'{subject}',
             message=f'{message}',
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=mailing_list
+            recipient_list=emails
         )

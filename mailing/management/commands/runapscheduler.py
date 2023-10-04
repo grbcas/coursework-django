@@ -60,13 +60,14 @@ class Command(BaseCommand):
         # )
 
         scheduler.add_job(
-            frequently_send_mailings(1),
+            frequently_send_mailings,
             trigger=CronTrigger(second="*/10"),  # Every 10 seconds
-            id="my_job",  # The `id` assigned to each job MUST be unique
+            id="frequently_send_mailings",  # The `id` assigned to each job MUST be unique
             max_instances=1,
             replace_existing=True,
+            args='1'
         )
-        logger.info("Added job 'my_job'.")
+        logger.info("Added job 'frequently_send_mailings'.")
 
         try:
             logger.info("Starting scheduler...")
