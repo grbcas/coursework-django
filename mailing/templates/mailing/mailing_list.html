@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load custom_tags %}
+
+<div>
+    <header>Список рассылок
+        <a class="button" href="{% url 'mailing:create' %}">Создать рассылку</a>
+    </header>
+</div>
+
+<div class="container mt-2">
+
+
+    {% for object in object_list %}
+
+    <div class="card mb-5">
+        <br class="card-body">
+            <p class="card-text">owner: {{ object.owner }}</p>
+            <p class="card-text">message: {{ object.message.subject }}</p>
+            <p class="card-text">emails: {{ object.recipients.email }}</p>
+            {% for r in object.recipients.all %}
+            <p> {{ r.email }}, </p>
+            {% endfor %}
+
+<div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'mailing:edit' object.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a href="{% url 'mailing:delete' object.pk %}" type="button"
+                       class="btn btn-danger btn-outline-secondary">Delete</a>
+
+                    <form action="{% url 'mailing:send_mailing_btn' object.pk %}" method="post">
+                    {%csrf_token%}
+                        <button class="btn btn-success" type="submit">Send</button>
+                    </form>
+
+                    <a href="{% url 'mailing:toggle_status_mailing' object.pk %}" >
+                        <button class="btn btn-success" type="button">Stop</button>
+                    </a>
+
+                {{ object.creation_date }}<br>
+                Status_run: {{ object.status_run }}<br>
+                Status_stop: {{ object.status_stop }}
+            </div>
+            </div>
+    {% endfor %}
+</div>
+{% endblock %}

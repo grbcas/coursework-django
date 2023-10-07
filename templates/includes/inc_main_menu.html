@@ -1,0 +1,44 @@
+<header>
+    <main></main>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="{% url 'mailing:home' %}">
+            <div style="width: 4rem;">
+                <img src="/media/plum_PNG8680.png" class="img-fluid" alt="Responsive image">
+            </div>
+            <span class="navbar-text">Sky</span>
+            <div class="d-flex flex-nowrap mr-auto">
+                <a href="{% url 'blog:list_blog' %}" class="btn btn-outline-secondary mr-2" type="button">Новости</a>
+            </div>
+            {% if user.is_authenticated %}
+            <a href="{% url 'mailing:list' %}" class="btn btn-outline-secondary mr-2" type="button">Рассылки</a>
+            <a href="{% url 'mailing:list_message' %}" class="btn btn-outline-secondary mr-2" type="button">Сообщения</a>
+            <a href="{% url 'mailing:recipients_list' %}" class="btn btn-outline-secondary mr-2" type="button">Клиенты</a>
+            {% endif %}
+
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        {% if user.is_authenticated %}
+                        <a class="nav-link" href="{% url 'users:logout' %}">Logout</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'users:profile' %}">Profile</a>
+                    </li>
+                    <li>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'users:login' %}">Login</a>
+                    {% endif %}
+                    </li>
+                    {% if not user.is_authenticated %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'users:register' %}">Register</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'users:password_reset' %}">ResetPSWD</a>
+                    </li>
+                    {%endif%}
+                </ul>
+
+            </div>
+    </nav>
+</header>

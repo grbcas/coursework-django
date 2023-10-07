@@ -1,0 +1,20 @@
+div {
+    display: flex; /* Make flex container */
+    justify-content: center; /* Center horizontally */
+}
+
+table {
+    width: 60%;
+    text-align: center; /* center text */
+}
+
+table, th, td {
+    border: 1px solid grey;
+    border-collapse: collapse;
+    padding: 5px;
+}
+
+h1 {
+    color: red;
+    text-align:center;
+}

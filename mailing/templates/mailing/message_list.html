@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load custom_tags %}
+
+<div>
+    <header>Список сообщений
+        <a class="button" href="{% url 'mailing:create_message' %}">Создать сообщение</a>
+    </header>
+</div>
+
+<div class="container mt-5">
+                <div class="d-flex justify-content-between align-items-center">
+    {% for object in object_list %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <p class="card-text">{{ object }}</p>
+            <p class="card-text">{{ object.owner }}</p>
+
+                    <a href="{% url 'mailing:edit_message' object.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a href="{% url 'mailing:delete_message' object.pk %}" type="button"
+                       class="btn btn-danger btn-outline-secondary">Delete</a>
+
+            </div>
+            </div>
+    {% endfor %}
+
+{% endblock %}

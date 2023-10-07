@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="col-md-4">
+    <div class="card mb-4 box-shadow">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+                <p class="card-text">{{ object.name|title }}</p>
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="{% url 'mailing:list' %}" class="btn btn-success">Undo</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
