@@ -3,7 +3,7 @@ from django.urls import path
 # from django.contrib.auth import views as auth_views
 from users.apps import UsersConfig
 from users.views import RegisterView, ProfileView, verification, PasswordView, PasswordResetView, PasswordResetDoneView, \
-    PasswordResetConfirmView, PasswordResetCompleteView
+    PasswordResetConfirmView, PasswordResetCompleteView, UserListView, deactivate_user
 
 app_name = UsersConfig.name
 
@@ -19,4 +19,7 @@ urlpatterns = [
     path('password_reset/done', PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+    path('users_list/', UserListView.as_view(), name='users_list'),
+    path('deactivate_user/<int:pk>/', deactivate_user, name='deactivate_user'),
 ]

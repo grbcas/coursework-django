@@ -18,4 +18,13 @@
         </div>
         {% endif %}
          </div>
+
+<div class="container">
+                <div>
+                    3 случайные статьи блога:<br>
+                    {% for object in object_list %}
+                    <a href="{% url 'blog:blog_detail' object.pk %}"  > {{ object }} </a> <br>
+                    {% endfor %}
+                </div>
+</div>
 {% endblock %}

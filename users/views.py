@@ -1,5 +1,6 @@
 import os
 
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import (PasswordResetDoneView as BasePasswordResetDoneView,
                                        PasswordResetView as BasePasswordResetView,
                                        PasswordResetConfirmView as BasePasswordResetConfirmView,
@@ -8,11 +9,12 @@ from django.contrib.auth.views import (PasswordResetDoneView as BasePasswordRese
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.sites.shortcuts import get_current_site
-from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView
 from django.core.mail import send_mail
 
 from config import settings
@@ -112,3 +114,32 @@ class PasswordResetConfirmView(BasePasswordResetConfirmView):
 class PasswordResetCompleteView(BasePasswordResetCompleteView):
     template_name = 'users/password_reset_complete.html'
     success_url = reverse_lazy('users:login')
+
+
+class UserListView(UserPassesTestMixin, ListView):
+    """
+    Контроллер страницы со списком всех зарегистрированных пользователей.
+    Страница доступна только manager и superuser
+    """
+
+    model = User
+    template_name = 'users/users_list.html'
+    ordering = 'email'
+
+    def test_func(self) -> bool:
+        user = self.request.user
+        is_manager = user.groups.filter(name='Managers').exists()
+        return user.is_superuser or is_manager
+
+
+def deactivate_user(request, pk: int) -> HttpResponse:
+    """
+    Контроллер для изменения статуса пользователя с активного на неактивный и наоборот.
+    Доступ к контроллеру есть только у менеджеров и суперюзеров
+    """
+
+    user = get_object_or_404(User, pk=pk)
+    user.is_active = not user.is_active
+    user.save()
+
+    return redirect('users:users_list')
