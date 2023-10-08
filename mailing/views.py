@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 
+from blog.models import Blog
 from mailing import services
 from mailing.forms import MailingForm, ClientForm
 from mailing.models import Mailing, Client, Message
@@ -23,7 +24,7 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         user = self.request.user
-
+        context['object_list'] = Blog.objects.order_by('?')[:3]
         if user.is_authenticated:
             user_statistic = services.get_user_statistic(user)
             context.update(user_statistic)
@@ -31,18 +32,30 @@ class HomeView(TemplateView):
         return context
 
 
-class MailingListView(LoginRequiredMixin, ListView):
+class OwnerSuperuserMixin:
+    """
+    Миксин, ограничивающий демонстрацию страницы объекта для пользователя,
+    который не является ни владельцем объекта, ни суперюзером
+    """
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner != self.request.user and not self.request.user.is_superuser:
+            raise Http404
+        return self.object
+
+
+class MailingListView(LoginRequiredMixin, OwnerSuperuserMixin, ListView):
     model = Mailing
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     user = self.request.user
-    #     # context["emails"] = Client.objects.values_list('email')
-    #     # context["emails"] = list(Mailing.objects.values_list('recipients__email', flat=True))
-    #     # context["owner"] = list(Mailing.objects.values_list('owner', flat=True))
-    #     print(context)
-    #
-    #     return context
+    def get_queryset(self) -> QuerySet:
+        user = self.request.user
+        is_manager = user.groups.filter(name='Managers').exists()
+        if user.is_superuser or is_manager:
+            queryset = super().get_queryset().all()
+        else:
+            queryset = super().get_queryset().filter(owner=user)
+        return queryset.order_by('name')
 
 
 class MailingCreateView(LoginRequiredMixin, CreateView):
@@ -54,7 +67,7 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('mailing:list')
 
 
-class MailingUpdateView(LoginRequiredMixin, UpdateView):
+class MailingUpdateView(LoginRequiredMixin, OwnerSuperuserMixin, UpdateView):
     model = Mailing
     form_class = MailingForm
     success_url = reverse_lazy('mailing:list')
@@ -105,19 +118,6 @@ def toggle_status_mailing(request, pk):
     mailing.save()
 
     return redirect('mailing:list')
-
-
-class OwnerSuperuserMixin:
-    """
-    Миксин, ограничивающий демонстрацию страницы объекта для пользователя,
-    который не является ни владельцем объекта, ни суперюзером
-    """
-
-    def get_object(self, queryset=None):
-        self.object = super().get_object(queryset)
-        if self.object.owner != self.request.user and not self.request.user.is_superuser:
-            raise Http404
-        return self.object
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):

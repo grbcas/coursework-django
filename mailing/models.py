@@ -84,7 +84,7 @@ class Log(models.Model):
     status = models.CharField(max_length=10, choices=STATE, verbose_name='Статус попытки')
     server_response = models.CharField(null=True, blank=True, max_length=3, verbose_name='Ответ сервера')
 
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент')
+    # client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент')
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name='Рассылка')
 
     def __str__(self):

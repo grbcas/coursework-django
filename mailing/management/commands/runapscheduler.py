@@ -37,35 +37,50 @@ class Command(BaseCommand):
         scheduler = BlockingScheduler(timezone=settings.TIME_ZONE)
         scheduler.add_jobstore(DjangoJobStore(), "default")
 
-        # scheduler.add_job(
-        #     frequently_send_mailings(1),
-        #     trigger=CronTrigger(day="*/1"),  # Every day
-        #     id="job_one_day_send_mailings",  # The `id` assigned to each job MUST be unique
-        #     max_instances=1,
-        #     replace_existing=True,
-        # )
-        # logger.info("Added job 'job_one_day_send_mailings'.")
-        #
-        # scheduler.add_job(
-        #     frequently_send_mailings(2),
-        #     trigger=CronTrigger(
-        #         day_of_week="mon", hour="00", minute="00"
-        #     ),  # Midnight on Monday, before start of the next work week.
-        #     id="job_week_send_mailings",
-        #     max_instances=1,
-        #     replace_existing=True,
-        # )
-        # logger.info(
-        #     "Added weekly job: 'job_week_send_mailings'."
-        # )
+        scheduler.add_job(
+            frequently_send_mailings,
+            trigger=CronTrigger(day="*/1"),  # Every day
+            id="job_one_day_send_mailings",  # The `id` assigned to each job MUST be unique
+            max_instances=1,
+            replace_existing=True,
+            args=['1']
+        )
+        logger.info("Added job 'job_one_day_send_mailings'.")
 
+        scheduler.add_job(
+            frequently_send_mailings,
+            trigger=CronTrigger(
+                day_of_week="mon", hour="00", minute="00"
+            ),  # Midnight on Monday, before start of the next work week.
+            id="job_week_send_mailings",
+            max_instances=1,
+            replace_existing=True,
+            args=['7']
+        )
+        logger.info(
+            "Added weekly job: 'job_week_send_mailings'."
+        )
+
+        scheduler.add_job(
+            frequently_send_mailings,
+            trigger=CronTrigger(month="*/1"),
+            id="job_month_send_mailings",
+            max_instances=1,
+            replace_existing=True,
+            args=['30']
+        )
+        logger.info(
+            "Added weekly job: 'job_week_send_mailings'."
+        )
+
+        # test каждые 10 сек
         scheduler.add_job(
             frequently_send_mailings,
             trigger=CronTrigger(second="*/10"),  # Every 10 seconds
             id="frequently_send_mailings",  # The `id` assigned to each job MUST be unique
             max_instances=1,
             replace_existing=True,
-            args='1'
+            args=['1']
         )
         logger.info("Added job 'frequently_send_mailings'.")
 

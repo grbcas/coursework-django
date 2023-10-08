@@ -2,8 +2,7 @@ from django.core.cache import cache
 from django.utils import timezone
 from django.core.mail import send_mail
 from config import settings
-from mailing.models import Mailing, Client, Message
-from users.models import User
+from mailing.models import Mailing, Client, Log
 
 
 def get_user_statistic(user) -> dict:
@@ -52,9 +51,13 @@ def toggle_state(frequency) -> None:
         mailing_dict = mailing.__dict__
         start_time = mailing_dict.get('start_time')
         stop_time = mailing_dict.get('stop_time')
+        status_stop = mailing_dict.get('status_stop')
 
         # start_time = mailing.values_list('start_time', flat=True)[0] # TypeError: 'Mailing' object is not iterable
         # stop_time = mailing.values_list('stop_time', flat=True)[0]
+
+        if status_stop:
+            continue
 
         if not stop_time:
             if datetime_now > start_time:
@@ -77,7 +80,6 @@ def frequently_send_mailings(frequency):
     # mailing_list = Mailing.objects.filter(frequency=frequency).filter(status_run=1) # не итерируется, нет данных из связанных таблиц
 
     mailing_list_id = Mailing.objects.values_list('id', flat=True).filter(frequency=frequency).filter(status_run=1)
-    print(mailing_list_id)
 
     for pk in mailing_list_id:
         # mailing_dict = mailing.__dict__
@@ -91,11 +93,34 @@ def frequently_send_mailings(frequency):
         subject = Mailing.objects.values_list('message__subject', flat=True).filter(pk=pk)[0]
         message = Mailing.objects.values_list('message__body', flat=True).filter(pk=pk)[0]
 
-        print(emails, '/n', subject, '/n', message)
+        print(emails, '\nsubject: ', subject, '\nmessage: ', message)
 
-        send_mail(
-            subject=f'{subject}',
-            message=f'{message}',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=emails
+        try:
+            send_mailing = send_mail(
+                subject=f'{subject}',
+                message=f'{message}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=emails
+                )
+            if send_mailing:
+                status = Log.STATE[0][0]
+            else:
+                status = Log.STATE[1][0]
+
+        except Exception:
+            status = Log.STATE[1][0]
+
+        print(
+            '---Mailing.objects.filter(pk=pk)---',
+            type(Mailing.objects.filter(pk=pk)),
+              Mailing.objects
         )
+
+        Log.objects.create(
+            last_try=timezone.now(),
+            status=status,
+            mailing=Mailing.objects.filter(pk=pk)[0]
+
+        )
+
+        print(Log.__dict__)
